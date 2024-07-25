@@ -100,17 +100,28 @@ public sealed class PropertyInfoList : IList<PropertyInfo>
 
             // Update the property info with the data from the managed type.
             refProperty.type = (GDExtensionVariantType)propertyInfo.Type;
+            refProperty.name = (NativeGodotStringName*)Marshal.AllocHGlobal(sizeof(NativeGodotStringName));
             StringNameMarshaller.WriteUnmanaged(refProperty.name, propertyInfo.Name);
             refProperty.hint = (uint)propertyInfo.Hint;
+            refProperty.hint_string = (NativeGodotString*)Marshal.AllocHGlobal(sizeof(NativeGodotString));
             StringMarshaller.WriteUnmanaged(refProperty.hint_string, propertyInfo.HintString);
+            refProperty.class_name = (NativeGodotStringName*)Marshal.AllocHGlobal(sizeof(NativeGodotStringName));
             StringNameMarshaller.WriteUnmanaged(refProperty.class_name, propertyInfo.ClassName);
             refProperty.usage = (uint)propertyInfo.Usage;
         }
         return ptr;
     }
 
-    internal unsafe static void FreeNative(GDExtensionPropertyInfo* ptr)
+    internal unsafe static void FreeNative(GDExtensionPropertyInfo* ptr, uint count)
     {
+        for (int i = 0; i < count; i++)
+        {
+            GDExtensionPropertyInfo item = ptr[i];
+            Marshal.FreeHGlobal((nint)item.class_name);
+            Marshal.FreeHGlobal((nint)item.hint_string);
+            Marshal.FreeHGlobal((nint)item.name);
+        }
+
         Marshal.FreeHGlobal((nint)ptr);
     }
 }
