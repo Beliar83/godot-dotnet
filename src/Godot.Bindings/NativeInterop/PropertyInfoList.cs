@@ -7,7 +7,7 @@ using Godot.NativeInterop.Marshallers;
 
 namespace Godot.NativeInterop;
 
-internal sealed class PropertyInfoList : IList<PropertyInfo>
+public sealed class PropertyInfoList : IList<PropertyInfo>
 {
     private readonly List<PropertyInfo> _values = [];
 
@@ -89,7 +89,7 @@ internal sealed class PropertyInfoList : IList<PropertyInfo>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    internal unsafe static GDExtensionPropertyInfo* ConvertToNative(PropertyInfoList value)
+    public unsafe static GDExtensionPropertyInfo* ConvertToNative(PropertyInfoList value)
     {
         int count = value.Count;
         GDExtensionPropertyInfo* ptr = (GDExtensionPropertyInfo*)Marshal.AllocHGlobal(sizeof(GDExtensionPropertyInfo) * count);
