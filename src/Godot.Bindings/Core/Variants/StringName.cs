@@ -19,6 +19,7 @@ public sealed class StringName : IDisposable, IEquatable<StringName?>
     private readonly WeakReference<IDisposable>? _weakReferenceToSelf;
 
     private readonly bool _isStatic;
+    private readonly bool _ownsPointer;
 
     internal static StringName Empty { get; } = CreateStaticStringNameFromAsciiLiteral(""u8);
 
@@ -28,10 +29,11 @@ public sealed class StringName : IDisposable, IEquatable<StringName?>
     /// <returns>If the <see cref="StringName"/> is empty.</returns>
     public bool IsEmpty => NativeValue.DangerousSelfRef.IsEmpty;
 
-    private StringName(NativeGodotStringName nativeValueToOwn, bool isStatic = false)
+    private StringName(NativeGodotStringName nativeValueToOwn, bool isStatic = false, bool ownsPointer = true)
     {
         NativeValue = nativeValueToOwn.AsMovable();
         _isStatic = isStatic;
+        _ownsPointer = ownsPointer;
 
         // Static StringNames must not be disposed, so don't register the disposable.
         if (!_isStatic)
@@ -49,6 +51,15 @@ public sealed class StringName : IDisposable, IEquatable<StringName?>
     internal static StringName CreateTakingOwnership(NativeGodotStringName nativeValueToOwn)
     {
         return new StringName(nativeValueToOwn);
+    }
+
+    /// <summary>
+    /// Constructs a new <see cref="StringName"/> from the value borrowed from
+    /// <paramref name="nativeValueToOwn"/>, NOT taking ownership of the value.
+    /// </summary>
+    internal static StringName Create(NativeGodotStringName nativeValueToOwn)
+    {
+        return new StringName(nativeValueToOwn, ownsPointer: false);
     }
 
     /// <summary>
@@ -136,7 +147,7 @@ public sealed class StringName : IDisposable, IEquatable<StringName?>
 
     private void Dispose(bool disposing)
     {
-        if (_isStatic)
+        if (_isStatic || !_ownsPointer)
         {
             // Static StringNames must not be disposed.
             return;
