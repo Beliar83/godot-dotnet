@@ -117,7 +117,7 @@ partial struct NativeGodotStringName
         int byteCount = Encoding.UTF8.GetByteCount(utf16);
 
         byte[]? tempArray = null;
-        Span<byte> utf8 = byteCount <= MaxByteCount
+        Span<byte> utf8 = byteCount < MaxByteCount
             ? stackalloc byte[MaxByteCount]
             : tempArray = ArrayPool<byte>.Shared.Rent(byteCount);
 
