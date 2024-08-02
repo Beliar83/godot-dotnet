@@ -100,18 +100,6 @@ public static partial class GodotBridge
         Initialize((GetProcAddressFunction)getProcAddress, (void*)library, (GDExtensionInitialization*)initialization, configure);
     }
 
-    [UnmanagedCallersOnly]
-    public static unsafe void Initialize(GDExtensionInterface* extensionInterface)
-    {
-        _gdextensionInterface = *extensionInterface;
-        fixed (GDExtensionGodotVersion* godotVersion = &_godotVersion)
-        {
-            _gdextensionInterface.get_godot_version(godotVersion);
-        }
-
-        _initialized = true;
-    }
-
     private unsafe static nint LoadProcAddress(ReadOnlySpan<byte> nameUtf8)
     {
         Debug.Assert(_getProcAddress is not null);
