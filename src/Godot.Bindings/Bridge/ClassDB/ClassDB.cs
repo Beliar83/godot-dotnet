@@ -252,7 +252,7 @@ public static class ClassDB
             var propertyList = instanceObj.GetPropertyListStorage();
             propertyList.Clear();
 
-            PropertyInfoList.FreeNative(propertyListPtr, count);
+            PropertyInfoList.FreeNative(propertyListPtr);
         }
     }
 
