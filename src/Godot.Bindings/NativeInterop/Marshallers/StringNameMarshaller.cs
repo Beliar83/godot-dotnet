@@ -20,11 +20,11 @@ internal unsafe static class StringNameMarshaller
         return ptr;
     }
 
-    public static StringName? ConvertFromUnmanaged(NativeGodotStringName* value, bool ownsPointer = true)
+    public static StringName? ConvertFromUnmanaged(NativeGodotStringName* value)
     {
         Debug.Assert(value is not null);
         return value->IsAllocated
-            ? ownsPointer ? StringName.CreateTakingOwnership(*value) : StringName.Create(*value)
+            ? StringName.CreateTakingOwnership(*value)
             : null;
     }
 
