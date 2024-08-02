@@ -101,7 +101,7 @@ public static partial class GodotBridge
     }
 
     [UnmanagedCallersOnly]
-    internal static unsafe void Initialize(GDExtensionInterface* extensionInterface)
+    public static unsafe void Initialize(GDExtensionInterface* extensionInterface)
     {
         _gdextensionInterface = *extensionInterface;
         fixed (GDExtensionGodotVersion* godotVersion = &_godotVersion)

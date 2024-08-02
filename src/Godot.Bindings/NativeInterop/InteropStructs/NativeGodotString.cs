@@ -35,7 +35,7 @@ partial struct NativeGodotString
         return dest;
     }
 
-    internal unsafe static NativeGodotString Create(string? utf16)
+    public unsafe static NativeGodotString Create(string? utf16)
     {
         if (utf16 is null)
         {
