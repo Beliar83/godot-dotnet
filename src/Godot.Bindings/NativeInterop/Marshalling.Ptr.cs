@@ -16,6 +16,12 @@ partial class Marshalling
 
         // `typeof(T1) == typeof(T2)` is optimized away. We cannot cache `typeof(T)` in a local variable, as it's not optimized when done like that.
 
+        if (value is nint ptr)
+        {
+            *(nint*)destination = ptr;
+            return;
+        }
+
         if (typeof(T) == typeof(bool))
         {
             *(bool*)destination = UnsafeAs<bool>(value);
