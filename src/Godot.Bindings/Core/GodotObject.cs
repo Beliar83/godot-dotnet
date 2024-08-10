@@ -16,6 +16,7 @@ partial class GodotObject : IDisposable
     private readonly WeakReference<GodotObject>? _weakReferenceToSelf;
 
     private bool _disposed;
+    private readonly bool _ownsPointer;
 
     private readonly PropertyInfoList _properties = [];
     internal PropertyInfoList GetPropertyListStorage() => _properties;
@@ -45,7 +46,11 @@ partial class GodotObject : IDisposable
     /// Constructs a <see cref="GodotObject"/> with the given <paramref name="nativeClassName"/>.
     /// </summary>
     /// <param name="nativeClassName">The name of the Godot engine class.</param>
-    private protected GodotObject(scoped NativeGodotStringName nativeClassName) : this(ConstructGodotObject(nativeClassName)) { }
+    private protected GodotObject(scoped NativeGodotStringName nativeClassName) : this(
+        ConstructGodotObject(nativeClassName))
+    {
+        _ownsPointer = true;
+    }
 
     private unsafe static nint ConstructGodotObject(scoped NativeGodotStringName nativeClassName)
     {
@@ -55,7 +60,10 @@ partial class GodotObject : IDisposable
     /// <summary>
     /// Constructs a new <see cref="GodotObject"/>.
     /// </summary>
-    public GodotObject() : this(NativeName.NativeValue.DangerousSelfRef) { }
+    public GodotObject() : this(NativeName.NativeValue.DangerousSelfRef)
+    {
+        _ownsPointer = true;
+    }
 
     private unsafe void PostInitialize()
     {
@@ -200,8 +208,10 @@ partial class GodotObject : IDisposable
 
         if (NativePtr != 0)
         {
-            GodotBridge.GDExtensionInterface.object_free_instance_binding((void*)NativePtr, GodotBridge.LibraryPtr);
-
+            if (_ownsPointer)
+            {
+                GodotBridge.GDExtensionInterface.object_free_instance_binding((void*)NativePtr, GodotBridge.LibraryPtr);
+            }
             _gcHandle.Free();
             NativePtr = 0;
         }
