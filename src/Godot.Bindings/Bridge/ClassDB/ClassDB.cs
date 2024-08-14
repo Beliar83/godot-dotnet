@@ -149,11 +149,6 @@ public static class ClassDB
         GodotBridge.GDExtensionInterface.classdb_register_extension_class3(GodotBridge.LibraryPtr, &classNameNative, &baseClassNameNative, &creationInfo);
 
         configure(context);
-
-        if (InteropUtils.RegisterVirtualOverridesHelpers.TryGetValue(godotNativeName, out var registerVirtualOverrides))
-        {
-            registerVirtualOverrides(context);
-        }
     }
 
     internal unsafe static void UnregisterAllClasses()
@@ -412,7 +407,7 @@ public static class ClassDB
 
         if (!context.RegisteredVirtualMethodOverrides.TryGetValue(methodNameStr, out var virtualMethodInfo))
         {
-            throw new InvalidOperationException($"Virtual method '{methodNameStr}' has not been registered in class '{context.ClassName}'.");
+            return null;
         }
 
         return (delegate* unmanaged[Cdecl]<void*, void**, void*, void>)Marshal.GetFunctionPointerForDelegate(virtualMethodInfo.Invoker.CallVirtualWithPtrArgs);

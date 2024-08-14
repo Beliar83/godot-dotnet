@@ -108,18 +108,15 @@ internal sealed class EngineClassesBindingsDataCollector : BindingsDataCollector
                     Body = MethodBody.Create(writer =>
                     {
                         writer.WriteLine($"var createHelpers = new global::System.Collections.Generic.Dictionary<StringName, global::System.Func<nint, global::Godot.GodotObject>>(capacity: {context.Api.Classes.Length});");
-                        writer.WriteLine($"var registerVirtualOverridesHelpers = new global::System.Collections.Generic.Dictionary<StringName, global::System.Action<global::Godot.Bridge.ClassDBRegistrationContext>>(capacity: {context.Api.Classes.Length});");
 
                         foreach (var engineClass in context.Api.Classes)
                         {
                             var type = context.TypeDB.GetTypeFromEngineName(engineClass.Name);
 
                             writer.WriteLine($"createHelpers.Add({type.FullNameWithGlobal}.NativeName, nativePtr => new {type.FullNameWithGlobal}(nativePtr));");
-                            writer.WriteLine($"registerVirtualOverridesHelpers.Add({type.FullNameWithGlobal}.NativeName, {type.FullNameWithGlobal}.RegisterVirtualOverrides);");
                         }
 
                         writer.WriteLine("CreateHelpers = global::System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(createHelpers);");
-                        writer.WriteLine("RegisterVirtualOverridesHelpers = global::System.Collections.Frozen.FrozenDictionary.ToFrozenDictionary(registerVirtualOverridesHelpers);");
                     }),
                 },
             }
@@ -296,9 +293,13 @@ internal sealed class EngineClassesBindingsDataCollector : BindingsDataCollector
 
         // Generate RegisterVirtualOverrides method.
         {
+            var typeParameterInfo = new TypeParameterInfo("T");
+            typeParameterInfo.Attributes.Add("[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]");
+            typeParameterInfo.ConstraintTypes.Add(type);
             var registerVirtualOverridesMethod = new MethodInfo("RegisterVirtualOverrides")
             {
-                VisibilityAttributes = VisibilityAttributes.Assembly,
+                VisibilityAttributes = VisibilityAttributes.Public,
+                TypeParameters = [typeParameterInfo],
                 IsStatic = true,
                 IsNew = engineClass.Name != "Object",
                 Parameters =

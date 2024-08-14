@@ -21,12 +21,23 @@ internal sealed class RegisterVirtualOverrides : MethodBody
 
     public override void Write(MethodBase owner, IndentedTextWriter writer)
     {
+        writer.WriteLine("if (context is null)");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("return;");
+        writer.Indent--;
+        writer.WriteLine("}");
+
         if (_type.BaseType is not null)
         {
-            writer.WriteLine($"{_type.BaseType.FullNameWithGlobal}.RegisterVirtualOverrides(context);");
+            writer.WriteLine($"{_type.BaseType.FullNameWithGlobal}.RegisterVirtualOverrides<T>(context);");
         }
         foreach (var (method, engineMethod) in _virtualMethods)
         {
+            writer.WriteLine($"if (typeof(T).GetMethod(nameof(MethodName.{method.Name}))?.DeclaringType != typeof({_type.Name}))");
+            writer.WriteLine('{');
+            writer.Indent++;
+
             writer.Write($"context.BindVirtualMethodOverride(MethodName.{method.Name}, ");
             writer.Write($"static ({_type.FullNameWithGlobal} __instance");
             if (method.Parameters.Count > 0)
@@ -84,6 +95,8 @@ internal sealed class RegisterVirtualOverrides : MethodBody
 
             writer.Indent--;
             writer.WriteLine("});");
+            writer.Indent--;
+            writer.WriteLine('}');
         }
     }
 }
