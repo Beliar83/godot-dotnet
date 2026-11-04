@@ -135,6 +135,7 @@ internal static class EntryPointWriter
             GodotRegistrationSpec.Kind.RuntimeClass => "RegisterRuntimeClass",
             GodotRegistrationSpec.Kind.VirtualClass => "RegisterVirtualClass",
             GodotRegistrationSpec.Kind.AbstractClass => "RegisterAbstractClass",
+            GodotRegistrationSpec.Kind.AbstractRuntimeClass => "RegisterAbstractRuntimeClass",
             GodotRegistrationSpec.Kind.InternalClass => "RegisterInternalClass",
             var kind => throw new InvalidOperationException($"Invalid registration kind '{kind}'."),
         });

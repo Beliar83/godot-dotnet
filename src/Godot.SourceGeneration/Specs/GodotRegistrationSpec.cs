@@ -28,9 +28,14 @@ internal readonly record struct GodotRegistrationSpec : IEquatable<GodotRegistra
         VirtualClass,
 
         /// <summary>
-        /// An abstract GDExtension class, it can't be instantiated.
+        /// An abstract GDExtension class that runs in the editor, it can't be instantiated.
         /// </summary>
         AbstractClass,
+
+        /// <summary>
+        /// An abstract GDExtension class that does not run in the editor, it can't be instantiated.
+        /// </summary>
+        AbstractRuntimeClass,
 
         /// <summary>
         /// An internal GDExtension class, hidden in the editor.

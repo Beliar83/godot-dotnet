@@ -31,9 +31,14 @@ internal static class RegistrationSpecCollector
         var registrationKind = GodotRegistrationSpec.Kind.RuntimeClass;
         if (typeSymbol.IsAbstract)
         {
-            // Abstract classes can't be registered as anything else, because
-            // it would require instantiating them, which isn't possible.
-            registrationKind = GodotRegistrationSpec.Kind.AbstractClass;
+            if (isTool ?? false)
+            {
+                registrationKind = GodotRegistrationSpec.Kind.AbstractClass;
+            }
+            else
+            {
+                registrationKind = GodotRegistrationSpec.Kind.AbstractRuntimeClass;
+            }
         }
         else if (isTool ?? false)
         {

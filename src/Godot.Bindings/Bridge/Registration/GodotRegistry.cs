@@ -88,15 +88,31 @@ public static partial class GodotRegistry
     }
 
     /// <summary>
-    /// Registers an abstract class with a configuration function that registers its members.
+    /// Registers an abstract tool class with a configuration function that registers its members.
     /// Abstract classes can't be instantiated or derived in user scripts, but can still be
     /// used as an export type.
+    /// Abstract classes registered with this method will also run in the editor, to avoid this
+    /// use <see cref="RegisterAbstractRuntimeClass{T}(Action{ClassRegistrationContext})"/>.
     /// </summary>
     /// <typeparam name="T">The type of the class.</typeparam>
     /// <param name="configure">The configuration function.</param>
     public static void RegisterAbstractClass<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicMethods | DynamicallyAccessedMemberTypes.PublicMethods)] T>(Action<ClassRegistrationContext> configure) where T : GodotObject
     {
         RegisterClassCore<T>(isVirtual: false, isAbstract: true, isExposed: true, isRuntime: false, configure);
+    }
+
+    /// <summary>
+    /// Registers an abstract runtime class with a configuration function that registers its members.
+    /// Abstract classes can't be instantiated or derived in user scripts, but can still be
+    /// used as an export type.
+    /// Abstract runtime classes don't run in the editor, to register abstract classes that also run in the editor
+    /// use <see cref="RegisterAbstractClass{T}(Action{ClassRegistrationContext})"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the class.</typeparam>
+    /// <param name="configure">The configuration function.</param>
+    public static void RegisterAbstractRuntimeClass<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicMethods | DynamicallyAccessedMemberTypes.PublicMethods)] T>(Action<ClassRegistrationContext> configure) where T : GodotObject
+    {
+        RegisterClassCore<T>(isVirtual: false, isAbstract: true, isExposed: true, isRuntime: true, configure);
     }
 
     /// <summary>
